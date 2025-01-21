@@ -1,15 +1,17 @@
 import { obj, effect } from "./reactivity.js";
 const { log } = console;
 
+let temp1, temp2;
+
 effect(() => {
-  log("effect run");
-  document.body.innerText = obj.ok ? obj.text : "not";
-})
+  log("outer effect invoked.");
+  effect(() => {
+    log("inner effect invoked.");
+    temp2 = obj.bar;
+  });
+  temp1 = obj.foo;
+});
 
 setTimeout(() => {
-  log("toggle ok to false");
-  obj.ok = false;
-  setTimeout(() => {
-    obj.text = "hello vue";
-  }, 1000 * 2); 
+  obj.foo = false;
 }, 1000 * 2);

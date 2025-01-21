@@ -1,9 +1,10 @@
 const bucket = new WeakMap();
 
 const data = {
-  ok: true,
-  text: "hello world",
+  foo: true,
+  bar: true,
 };
+const effectStack = [];
 let activeEffect;
 
 export const obj = new Proxy(data, {
@@ -51,7 +52,10 @@ export function effect(fn) {
   const effectFn = () => {
     cleanup(effectFn);
     activeEffect = effectFn;
+    effectStack.push(effectFn);
     fn();
+    effectStack.pop();
+    activeEffect = effectStack[effectStack.length - 1];
   }
   effectFn.deps = [];
   effectFn();
