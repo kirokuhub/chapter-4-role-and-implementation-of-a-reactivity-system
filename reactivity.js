@@ -49,10 +49,16 @@ function trigger(target, key) {
       depsToRun.add(fn);
     }
   });
-  depsToRun.forEach((fn) => fn());
+  depsToRun.forEach((fn) => {
+    if(fn.options.scheduler) {
+      fn.options.scheduler(fn);
+    } else {
+      fn();
+    }
+  });
 }
 
-export function effect(fn) {
+export function effect(fn, options = {}) {
   const effectFn = () => {
     cleanup(effectFn);
     activeEffect = effectFn;
@@ -62,6 +68,7 @@ export function effect(fn) {
     activeEffect = effectStack[effectStack.length - 1];
   }
   effectFn.deps = [];
+  effectFn.options = options;
   effectFn();
 }
 
