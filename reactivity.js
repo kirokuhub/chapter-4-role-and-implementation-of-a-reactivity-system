@@ -1,6 +1,7 @@
 const bucket = new WeakMap();
 
 const data = {
+  ok: true,
   text: "hello world",
 };
 let activeEffect;
@@ -33,7 +34,8 @@ export const obj = new Proxy(data, {
       return;
     }
     const deps = depsMap.get(key);
-    deps && deps.forEach((fn) => fn());
+    const depsToRun = new Set(deps);
+    depsToRun.forEach((fn) => fn());
     return true;
   },
 });
