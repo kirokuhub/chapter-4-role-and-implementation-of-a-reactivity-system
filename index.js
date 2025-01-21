@@ -3,9 +3,13 @@ const { log } = console;
 
 effect(() => {
   log("effect run");
-  document.body.innerText = obj.text;
+  document.body.innerText = obj.ok ? obj.text : "not";
 })
 
 setTimeout(() => {
-  obj.text = "hello vue";
+  log("toggle ok to false");
+  obj.ok = false;
+  setTimeout(() => {
+    obj.text = "hello vue";
+  }, 1000 * 2); 
 }, 1000 * 2);
