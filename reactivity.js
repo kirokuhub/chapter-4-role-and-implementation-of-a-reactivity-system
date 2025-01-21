@@ -1,8 +1,7 @@
 const bucket = new WeakMap();
 
 const data = {
-  foo: true,
-  bar: true,
+  foo: 1,
 };
 const effectStack = [];
 let activeEffect;
@@ -44,7 +43,12 @@ function trigger(target, key) {
     return;
   }
   const deps = depsMap.get(key);
-  const depsToRun = new Set(deps);
+  const depsToRun = new Set();
+  deps && deps.forEach((fn) => {
+    if(fn !== activeEffect) {
+      depsToRun.add(fn);
+    }
+  });
   depsToRun.forEach((fn) => fn());
 }
 
