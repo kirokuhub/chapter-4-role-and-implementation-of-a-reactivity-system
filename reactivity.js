@@ -3,10 +3,13 @@ const bucket = new Set();
 const data = {
   text: "hello world",
 };
+let activeEffect;
 
 export const obj = new Proxy(data, {
   get(target, key) {
-    bucket.add(effect);
+    if (activeEffect) {
+      bucket.add(activeEffect);
+    }
     return target[key];
   },
   set(target, key, value) {
@@ -16,8 +19,7 @@ export const obj = new Proxy(data, {
   },
 });
 
-function effect() {
-  document.body.innerText = obj.text;
+export function effect(fn) {
+  activeEffect = fn;
+  fn();
 }
-
-effect();
