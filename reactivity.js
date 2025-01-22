@@ -101,12 +101,23 @@ export function flushJob() {
 }
 
 export function computed(getter) {
+  let value;
+  let dirty = true;
   const effectFn = effect(getter, {
     lazy: true,
+    scheduler() {
+      if(!dirty) {
+        dirty = true;
+      }
+    }
   });
   const obj = {
     get value() {
-      return effectFn();
+      if(dirty) {
+        value = effectFn();
+        dirty = false;
+      }
+      return value;
     }
   }
   return obj;
