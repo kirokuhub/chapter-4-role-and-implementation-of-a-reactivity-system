@@ -127,11 +127,22 @@ export function computed(getter) {
 
 export function watch(source, cb) {
   effect(
-    () => source.foo,
+    () => traverse(source),
     {
       scheduler() {
         cb();
       }
     }
   );
+}
+
+function traverse(value, seen = new Set()) {
+  if(typeof value !== 'object' || value === null || seen.has(value)) {
+    return;
+  }
+  seen.add(value);
+  for(const key in value) {
+    traverse(value[key], seen);
+  }
+  return value;
 }
