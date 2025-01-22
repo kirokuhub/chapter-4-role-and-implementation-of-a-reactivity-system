@@ -1,8 +1,8 @@
 import { obj, watch } from "./reactivity.js";
 const { log } = console;
 
-watch(() => obj.foo, () => {
-  console.log(`数据变化了`)
+watch(() => obj.foo, (newVal, oldVal) => {
+  log(`newValue: ${newVal}, oldValue: ${oldVal}`)
 })
 
 setTimeout(() => {

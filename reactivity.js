@@ -127,21 +127,25 @@ export function computed(getter) {
 
 export function watch(source, cb) {
   let getter;
-  
+
   if(typeof source === 'function') {
     getter = source;
   } else {
     getter = () => traverse(source);
   }
 
-  effect(
+  let newValue, oldValue;
+  const effectFn = effect(
     () => getter(),
     {
       scheduler() {
-        cb();
+        newValue = effectFn();
+        cb(newValue, oldValue);
+        oldValue = newValue;
       }
     }
   );
+  oldValue = effectFn();
 }
 
 function traverse(value, seen = new Set()) {
