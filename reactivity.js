@@ -125,7 +125,7 @@ export function computed(getter) {
   return obj;
 }
 
-export function watch(source, cb) {
+export function watch(source, cb, options = {}) {
   let getter;
 
   if(typeof source === 'function') {
@@ -135,17 +135,25 @@ export function watch(source, cb) {
   }
 
   let newValue, oldValue;
+
+  const job = () => {
+    newValue = effectFn();
+    cb(newValue, oldValue);
+    oldValue = newValue;
+  }
+
   const effectFn = effect(
     () => getter(),
     {
-      scheduler() {
-        newValue = effectFn();
-        cb(newValue, oldValue);
-        oldValue = newValue;
-      }
+      lazy: true,
+      scheduler: job,
     }
   );
-  oldValue = effectFn();
+  if(options.immediate) {
+    job();
+  } else {
+    oldValue = effectFn();
+  }
 }
 
 function traverse(value, seen = new Set()) {
