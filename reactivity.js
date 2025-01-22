@@ -146,7 +146,16 @@ export function watch(source, cb, options = {}) {
     () => getter(),
     {
       lazy: true,
-      scheduler: job,
+      scheduler() {
+        // 触发时机 'post' 的实现
+        if (options.flush === 'post') {
+          const p = Promise.resolve()
+          p.then(job)
+        } else {
+          // 触发时机 'sync' 的实现
+          job()
+        }
+      },
     }
   );
   if(options.immediate) {
