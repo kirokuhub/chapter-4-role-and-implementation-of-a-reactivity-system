@@ -2,6 +2,7 @@ const bucket = new WeakMap();
 
 const data = {
   foo: 1,
+  bar: 2
 };
 const effectStack = [];
 let activeEffect;
@@ -63,13 +64,17 @@ export function effect(fn, options = {}) {
     cleanup(effectFn);
     activeEffect = effectFn;
     effectStack.push(effectFn);
-    fn();
+    const res = fn();
     effectStack.pop();
     activeEffect = effectStack[effectStack.length - 1];
+    return res;
   }
   effectFn.deps = [];
   effectFn.options = options;
-  effectFn();
+  if(!options.lazy) {
+    effectFn();
+  }
+  return effectFn;
 }
 
 function cleanup(effectFn) {
@@ -93,4 +98,16 @@ export function flushJob() {
   }).finally(() => {
     isFlushing = false;
   });
+}
+
+export function computed(getter) {
+  const effectFn = effect(getter, {
+    lazy: true,
+  });
+  const obj = {
+    get value() {
+      return effectFn();
+    }
+  }
+  return obj;
 }
