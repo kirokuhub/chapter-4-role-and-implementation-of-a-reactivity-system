@@ -108,6 +108,7 @@ export function computed(getter) {
     scheduler() {
       if(!dirty) {
         dirty = true;
+        trigger(obj, 'value');
       }
     }
   });
@@ -117,6 +118,7 @@ export function computed(getter) {
         value = effectFn();
         dirty = false;
       }
+      track(obj, 'value');
       return value;
     }
   }
