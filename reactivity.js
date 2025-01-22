@@ -124,3 +124,14 @@ export function computed(getter) {
   }
   return obj;
 }
+
+export function watch(source, cb) {
+  effect(
+    () => source.foo,
+    {
+      scheduler() {
+        cb();
+      }
+    }
+  );
+}

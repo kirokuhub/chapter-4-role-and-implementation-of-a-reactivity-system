@@ -1,14 +1,10 @@
-import { obj, effect, jobQueue, flushJob, computed } from "./reactivity.js";
+import { obj, watch } from "./reactivity.js";
 const { log } = console;
 
-const sum = computed(() => obj.foo + obj.bar);
-
-effect(() => {
-  console.log('sum.value');
-  console.log(sum.value);
-  console.log('\n');
+watch(obj, () => {
+  log(`数据变化了`);
 });
 
 setTimeout(() => {
-  obj.foo++;
-}, 2000);
+  obj.foo++
+}, 3000);
