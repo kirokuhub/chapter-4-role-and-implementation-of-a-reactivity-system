@@ -126,8 +126,16 @@ export function computed(getter) {
 }
 
 export function watch(source, cb) {
+  let getter;
+  
+  if(typeof source === 'function') {
+    getter = source;
+  } else {
+    getter = () => traverse(source);
+  }
+
   effect(
-    () => traverse(source),
+    () => getter(),
     {
       scheduler() {
         cb();
